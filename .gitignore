@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+uv.lock
+dist/
+build/
+*.egg-info/
+
+# Env / secrets
+.env
+.env.local
+
+# ADK
+.adk/
+.eval_results/
+.rag_data/
+
+# Runtime data
+chroma/
+sessions.db
+*.sqlite3
+data/health.json
+data/incidents.json
+data/dependencies.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Evidence artifacts (screenshots/logs kept out of git unless small)
+docs/evidence/*.png
+docs/evidence/*.mp4

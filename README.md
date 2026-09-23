@@ -6,14 +6,14 @@ persistent team risk-appetite memory. **Advisory only** — it never approves,
 blocks, merges, or deploys.
 
 - Stack: Google ADK (python) 2.9.x, `gemini-2.5-flash` on Vertex AI
-  (project `REDACTED`, region `us-central1`), Gradio UI
+  (project + region configured in local `.env`), Gradio UI
 - Spec: [Sep-Projects/ChangeRiskAdvisor](../Sep-Projects/ChangeRiskAdvisor/requirements.md)
 - Decisions: [docs/adr/](docs/adr/) · running notes: [docs/adr/architecture-journal.md](docs/adr/architecture-journal.md)
 
 ## Prerequisites
 
 - `uv` (installs Python 3.13 automatically)
-- `gcloud` authed to project `REDACTED`: `gcloud auth application-default login`
+- `gcloud` authed to the GCP project in `.env`: `gcloud auth application-default login`
 
 ## Setup (fresh clone)
 
@@ -21,7 +21,7 @@ blocks, merges, or deploys.
 git clone https://github.com/rajesamp/CRA.git
 cd CRA
 uv sync
-cp .env.example .env   # GOOGLE_CLOUD_PROJECT=REDACTED, region us-central1
+cp .env.example .env   # then set GOOGLE_CLOUD_PROJECT + GOOGLE_CLOUD_LOCATION
 ```
 
 ## Run

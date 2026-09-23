@@ -22,7 +22,7 @@ Solo build (capstone format): all ownership below is Raj Sam's.
 |---|---|
 | Agent framework | Google ADK (python) — `google-adk` 2.9.x |
 | Model | `gemini-2.5-flash` on Gemini Enterprise Agent Platform (Vertex AI), versioned ID |
-| GCP project / region | `REDACTED` (REDACTED) / `us-central1` |
+| GCP project / region | project ID in local `.env` (not committed) / `us-central1` |
 | Vector store | ChromaDB (local); Vertex Knowledge Engine as later option (ADR-002) |
 | Memory | ADK `DatabaseSessionService` (SQLite) + `user:` state (ADR-003) |
 | Guardrails | ADK before/after model callbacks (ADR-004) |

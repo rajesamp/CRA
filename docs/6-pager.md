@@ -175,34 +175,52 @@ for each choice are in the decision records under [docs/adr/](adr/index.md).
 
 ## Goals & Non-Goals
 
-Our goals are stated as outcomes we can check at the demo. First, every risk
-assessment CRA produces cites at least one retrieved incident or live tool
-result for each claim it makes; an assessment without evidence is flagged as
-unconfirmed, never guessed. Second, CRA answers all six sample queries in
-requirements.md with the expected behaviour, including correct freeze-window
-status and the correct dependency list for payment-gateway. Third, a high-risk
-setting stated in one session is applied, unprompted, in the next. Fourth, CRA
-refuses every request to approve a change, direct or indirect, and offers the
-assessment instead. Fifth, when a tool fails, CRA degrades gracefully and says
-what it could not confirm.
+Each goal is an outcome we can check at the demo.
 
-Our non-goals matter as much. CRA will never approve, block, merge, or deploy a
-change. That is the product's defining rule, not a limitation we plan to lift:
-the approval step stays an explicit human action in the demo and in any future
-version, because the people who ship a change are accountable for it and hold
-context CRA does not.
+The first goal is that every claim is cited. Every risk rating, reason, and
+mitigation CRA gives points to a retrieved incident or a live tool result from
+that request. Anything CRA can't support is marked unconfirmed, never guessed.
+This is the goal that answers the problem directly: it puts the history in
+front of the reviewer, with sources they can check.
 
-CRA will not integrate with live CI/CD pipelines, source control, or production
-monitoring in this build. requirements.md asks for a static or lightly
-simulated dataset, and a fixed dataset lets us test CRA's answers against known
-facts. Connecting real systems is a later decision that would bring access
-control and data-handling questions this build does not need to answer.
+The second goal is that CRA passes all six sample queries in requirements.md,
+scored automatically against the golden eval. That includes the correct freeze
+status and the correct dependency list for payment-gateway. The third is that a
+high-risk flag set in one session is applied, unprompted, in the next. The
+fourth is that CRA refuses every request to approve a change, direct or
+indirect, and offers the risk assessment instead. The fifth is that when a tool
+fails, CRA says what it couldn't confirm instead of answering around the gap.
 
-CRA will not replace the team's change review. It prepares the reviewer; it
-does not remove them. We also will not use real incident records or customer
-data. The core dataset is synthetic, and any real public postmortems added to
-the corpus are summarised, linked to their source, and never presented as the
-team's own history (see ADR-007).
+The sixth goal is speed, and we state it as a hypothesis to test, not a claim.
+On a release-day spike, Raj Sam should get an evidence-backed risk read from one
+question instead of a trip through the incident tracker. We will time it on the
+sample changes and report what we find.
+
+The non-goals matter as much.
+
+CRA will never approve, block, merge, or deploy a change. The reason is
+rubber-stamping. The moment a tool can approve a change, reviewers stop reading
+the change, and INC-2201 shows what that costs: it was rated low-risk and became
+a SEV1. A tool that could approve would ship that label straight to production.
+An advisor that can't approve keeps the reviewer reading.
+
+CRA will not take automatic action, even when it rates a change High. It never
+rolls back, pauses a deploy, or edits config. Acting on its own rating would be
+approval by another name.
+
+CRA will not connect to live CI/CD pipelines, source control, or production
+monitoring in this build. requirements.md asks for a static or lightly simulated
+dataset, and a fixed dataset lets us test every answer against known facts. Live
+integration would bring access-control and data-handling questions this build
+doesn't need to answer yet.
+
+CRA will not replace the team's change review. It prepares the reviewer; the
+review and the people in it stay.
+
+CRA will not use real incident records or customer data. The core dataset is
+synthetic. Any real public postmortems added to the corpus are summarised in our
+own words, linked to their source, and never presented as the team's own history
+(ADR-007).
 
 ## Key Risks & Mitigations
 

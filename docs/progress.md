@@ -30,7 +30,7 @@ past incidents; plus a 6-pager and a PR/FAQ.
 
 | # | Task | Status | Evidence / gap |
 |---|---|---|---|
-| 1 | Kickoff: roles, requirements read, stack agreed | ✅ | `docs/team.md` has roles, stack, and read confirmation. Nit: persona is "Raj Sam"; requirements.md names **Sameer**. |
+| 1 | Kickoff: roles, requirements read, stack agreed | ✅ | `docs/team.md` has roles, stack, and read confirmation. |
 | 2 | Amazon-style 6-pager | ❌ | No `docs/6-pager.md`. |
 | 3 | PR/FAQ (≥5 FAQs incl. data handling + advisory-only) | ❌ | No `docs/pr-faq.md`. |
 | 4 | Repo, branch strategy, .gitignore, README | 🟡 | Repo, `.gitignore`, README exist. Only `main` branch (DoD wants feature branches); no teammate clone-and-run evidence; README spec link `../Sep-Projects/...` is broken on GitHub. |
@@ -86,7 +86,7 @@ on-demand approval refusal.
 | 30 | Apply fixes, re-run evals, show delta | ❌ | — |
 | 31 | Dashboard: tool failure rate, guardrail triggers, high-risk hits | ❌ | — |
 | 32 | Edge cases: timeouts, ambiguous "this change", no corpus match | ❌ | — |
-| 33 | Demo script (Sameer persona, live queries, memory, scorecard) | ❌ | — |
+| 33 | Demo script (Raj Sam persona, live queries, memory, scorecard) | ❌ | — |
 | 34 | Final rehearsal, deployed build, backup video in README | ❌ | — |
 
 ## Catch-up plan (this week)
@@ -95,7 +95,7 @@ on-demand approval refusal.
    retrieval → #10 prototype → #11 Gradio. This alone meets the Week 1 demo.
 2. In parallel: #5 system prompt (feeds #10).
 3. Writing, no code dependency: #2 6-pager, #3 PR/FAQ.
-4. Quick fixes: feature-branch workflow, README spec link, persona name.
+4. Quick fixes: feature-branch workflow, README spec link.
 5. Then Week 2 (#12–#18).
 
 ## Other findings

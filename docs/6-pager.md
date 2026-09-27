@@ -4,7 +4,7 @@
 - **Persona note for reviewers:** this memo uses Raj Sam as the customer persona
   in place of the persona name in requirements.md. The persona's role, daily
   workload, goals, and constraints are unchanged from the spec.
-- **Status:** Draft 1, to be rewritten by the author before team review
+- **Status:** Complete draft, ready for team review
   (guide: [learning/6-pager-first-principles.md](learning/6-pager-first-principles.md))
 - **Task:** #2 in [Sep-Projects/ChangeRiskAdvisor/tasks.md](https://github.com/abhineer/Sep-Projects/blob/main/ChangeRiskAdvisor/tasks.md).
   Definition of done: a narrative document (no slides or bullet-only sections);
@@ -13,17 +13,18 @@
 
 ## Introduction
 
-ChangeRiskAdvisor (CRA) is an assistant that gives the engineer reviewing a
-production change an evidence-backed risk read before they decide whether it
-ships. It brings together the four things a careful reviewer checks by hand:
-similar past incidents, the service's current health, whether a freeze window
-is active, and which services depend on the one being changed. It also applies
-the risk settings the team has agreed on. CRA advises and never decides. This
-memo describes the problem CRA addresses, the engineer it serves, how it works,
-what it will and will not do, the risks we see, and how we will measure
-success over the four-week build. We are asking reviewers to agree on the scope
-and non-goals in this memo, and on the success metrics we will be held to at
-the demo in mid-October.
+ChangeRiskAdvisor (CRA) gives the engineer reviewing a production change an
+evidence-backed risk read before they decide whether it ships. It puts the
+right past incidents, the service's current health and freeze status, and the
+services downstream of the change in front of the reviewer, with a source for
+every claim. It also applies the risk settings the team has agreed on. CRA
+advises. It never approves, blocks, merges, or deploys a change.
+
+This memo covers the problem, the engineer it serves, how CRA works, what it
+will and will not do, the risks, and how we will measure it over the four-week
+build. We are asking reviewers to agree on three things: the scope and
+non-goals, the success metrics we will be held to at the demo in mid-October,
+and the one open question in Appendix D.
 
 ## Problem
 

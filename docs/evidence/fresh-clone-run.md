@@ -30,6 +30,22 @@ completes the last step with a real key.
 | Spec link was a relative path that 404s on GitHub | Absolute link to Sep-Projects |
 | No way to tell whether setup worked | Added "Check it works" with expected output and fixes for both setup errors |
 
+## 1b. Clean-room run on the Week 1 build (Claude Code, 2026-09-27)
+
+A new clone of commit `860988f`, which adds the RAG pipeline, agent, and UI,
+following the updated README. No model key was available.
+
+| Step | Command | Result |
+|---|---|---|
+| Install | `uv sync` | ✅ Python 3.13.12, 115 packages |
+| Configure | `cp .env.example .env` | ✅ |
+| Build index | `uv run python -m cra.ingest` | ✅ 40 documents, 72 chunks |
+| Tests | `uv run pytest -q` | ✅ 12 passed |
+| Gradio UI | `uv run python app.py` | ✅ Serving on http://127.0.0.1:7860 (HTTP 200) |
+
+Not covered here: a grounded answer from the model, which needs a key. The
+teammate run below covers it.
+
 ## 2. Teammate run (pending, after PR #1 merges)
 
 Run this only after [rajesamp/CRA#1](https://github.com/rajesamp/CRA/pull/1)

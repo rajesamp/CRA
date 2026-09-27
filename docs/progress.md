@@ -33,7 +33,7 @@ past incidents; plus a 6-pager and a PR/FAQ.
 | 1 | Kickoff: roles, requirements read, stack agreed | ✅ | `docs/team.md` has roles, stack, and read confirmation. |
 | 2 | Amazon-style 6-pager | 🟡 | `docs/6-pager.md` skeleton (all required headings, prompts, sign-off block) and study guide `docs/learning/6-pager-first-principles.md`. Sections not written yet; no team approval. |
 | 3 | PR/FAQ (≥5 FAQs incl. data handling + advisory-only) | 🟡 | `docs/pr-faq.md` drafted: press release from Raj Sam's point of view, 12 FAQs (data handling #7, advisory-only #2 and #9). Waiting on team approval and sign-off rows. |
-| 4 | Repo, branch strategy, .gitignore, README | 🟡 | Repo, `.gitignore`, README exist. One feature branch exists but no agreed, documented branch strategy; README needs a GCP project and gcloud login and has no clean-clone test; no teammate clone-and-run evidence; README spec link `../Sep-Projects/...` is broken on GitHub. `.gitignore` excludes `data/*.json`, which conflicts with task #6 (dataset must be committed). |
+| 4 | Repo, branch strategy, .gitignore, README | 🟡 | Branching convention documented in README (`main` + `task/<n>-<slug>` branches via PR). README now runs from a fresh clone with a Gemini API key or Vertex AI; clean-room run recorded in `docs/evidence/fresh-clone-run.md`. `.gitignore` fixed so the dataset can be committed. **Pending: teammate clone-and-run row + PR comment.** |
 | 5 | System prompt (advisory only, cite evidence) + 2 test transcripts | ❌ | `agent.py` still has the hello-agent instruction. |
 | 6 | Synthetic dataset: incidents, dependency graph, health snapshots | ❌ | No `data/`. Seeds available: `sample_data/change_risk_sample.xlsx`, `change_management_postmortem.pdf` in Sep-Projects. |
 | 7 | RAG corpus covering all 6 sample queries | ❌ | No `corpus/`. |
@@ -95,7 +95,7 @@ on-demand approval refusal.
    retrieval → #10 prototype → #11 Gradio. This alone meets the Week 1 demo.
 2. In parallel: #5 system prompt (feeds #10).
 3. Writing, no code dependency: #2 6-pager, #3 PR/FAQ.
-4. Quick fixes: feature-branch workflow, README spec link.
+4. Get a teammate to run the README from a fresh clone and record it (closes #4).
 5. Then Week 2 (#12–#18).
 
 ## Other findings

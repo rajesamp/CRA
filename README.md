@@ -75,8 +75,9 @@ After a successful run, record it as described in
 | `CLAUDE.md` | Project rules for Claude Code sessions (naming, progress tracking) |
 | `docs/team.md` | Roles and agreed stack |
 | `docs/progress.md` | Weekly progress against the 34-task plan |
-| `docs/6-pager.md`, `docs/pr-faq.md` | Week 1 written deliverables |
+| `docs/pr-faq.md` | PR/FAQ (task #3). The 6-pager (task #2) arrives through its own PR. |
 | `docs/evidence/` | Evidence of completion (run transcripts, screenshots) |
 | `docs/adr/` | Architecture decision records and journal |
-| `data/`, `corpus/` | Synthetic dataset and RAG corpus (tasks #6–#7, committed) |
+| `data/` | Synthetic dataset and golden eval cases; see [data/README.md](data/README.md) |
+| `corpus/` | RAG corpus (task #7) |
 | `workspace/` (not in repo) | Kanban board and ADK research notes |

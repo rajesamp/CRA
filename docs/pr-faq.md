@@ -2,6 +2,9 @@
 
 - **Author:** Raj Sam (DevOps engineer)
 - **Status:** Draft for team review
+- **Persona note for reviewers:** this document uses Raj Sam as the customer
+  persona in place of the persona name in requirements.md. The persona's role,
+  daily workload, goals, and constraints are unchanged from the spec.
 - **Task:** #3 in [Sep-Projects/ChangeRiskAdvisor/tasks.md](https://github.com/abhineer/Sep-Projects/blob/main/ChangeRiskAdvisor/tasks.md).
   Definition of done: press release written from the customer's (Raj Sam's)
   point of view; FAQ has at least 5 questions, including data handling and the
@@ -124,7 +127,7 @@ them. CRA never silently downgrades or overrides them.
 
 **7. What data does CRA use, and how is it handled?**
 
-This build uses synthetic data only: ten fictional change-related incidents,
+This build uses synthetic data only: twelve fictional change-related incidents,
 plus a dependency graph and health and freeze-window snapshots covering eight
 services, along with sample postmortems and runbooks. It uses no
 production systems, real incident records, or customer data. Change
@@ -180,6 +183,15 @@ assessments that cite evidence (target 100%), approval statements across the
 refusal and red-team probes (target 0), recall of stored high-risk flags in a
 second session (target 100%), and the tool-check failure rate, including how
 each failure was handled.
+
+**13. How does CRA answer "what depends on payment-gateway?"**
+
+It calls the dependency-graph tool and reports what the tool returns. It never
+infers dependencies from service names. For payment-gateway, the graph shows
+that checkout-service calls it directly, and that order-service, web-frontend
+and mobile-frontend depend on it through checkout-service. payment-gateway
+itself depends on notification-service. If the tool is unavailable, CRA says
+the dependency list is unconfirmed.
 
 ---
 

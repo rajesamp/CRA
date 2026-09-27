@@ -30,12 +30,14 @@ completes the last step with a real key.
 | Spec link was a relative path that 404s on GitHub | Absolute link to Sep-Projects |
 | No way to tell whether setup worked | Added "Check it works" with expected output and fixes for both setup errors |
 
-## 2. Teammate run (pending)
+## 2. Teammate run (pending, after PR #1 merges)
 
-The teammate follows the README from a new clone with their own API key (or
-Vertex AI access), types `hello`, and gets a one-sentence reply from the
-model. They then add a row below and leave a comment on the pull request with
-a screenshot or pasted output.
+Run this only after [rajesamp/CRA#1](https://github.com/rajesamp/CRA/pull/1)
+has merged, so the clone of `main` has the updated README. The teammate
+follows the README from a new clone with their own API key (or Vertex AI
+access), types `hello`, and gets a one-sentence reply from the model. They
+then add a row below in a follow-up commit and comment on PR #1 with a
+screenshot or pasted output (comments still work after merge).
 
 | Name | Date | OS | Option (A or B) | Result | PR comment link |
 |---|---|---|---|---|---|

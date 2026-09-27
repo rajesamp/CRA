@@ -1,0 +1,50 @@
+[
+  {
+    "service": "checkout-service",
+    "status": "Healthy",
+    "freeze_window_active": false,
+    "last_incident_date": "2026-08-30"
+  },
+  {
+    "service": "payment-gateway",
+    "status": "Degraded",
+    "freeze_window_active": false,
+    "last_incident_date": "2026-08-15"
+  },
+  {
+    "service": "auth-service",
+    "status": "Healthy",
+    "freeze_window_active": true,
+    "last_incident_date": "2026-09-10"
+  },
+  {
+    "service": "inventory-service",
+    "status": "Healthy",
+    "freeze_window_active": false,
+    "last_incident_date": "2026-06-01"
+  },
+  {
+    "service": "order-service",
+    "status": "Healthy",
+    "freeze_window_active": false,
+    "last_incident_date": "2026-05-02"
+  },
+  {
+    "service": "notification-service",
+    "status": "Healthy",
+    "freeze_window_active": false,
+    "last_incident_date": "2026-07-29"
+  },
+  {
+    "service": "web-frontend",
+    "status": "Healthy",
+    "freeze_window_active": false,
+    "last_incident_date": "2026-04-01"
+  },
+  {
+    "service": "mobile-frontend",
+    "status": "Healthy",
+    "freeze_window_active": true,
+    "last_incident_date": "2026-09-10"
+  }
+]

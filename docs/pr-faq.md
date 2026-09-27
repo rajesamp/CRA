@@ -36,7 +36,7 @@ from 5,000 ms to 500 ms. It was reviewed as a low-risk tweak. Eight minutes
 after it deployed, a promotional email tripled traffic; checkout success
 dropped 42% for 38 minutes and about 1,150 checkout attempts failed. Two earlier incidents on the
 same payment-gateway dependency pointed to exactly this risk, but nobody
-reviewing the change had them in front of them. Of the ten change-related
+reviewing the change had them in front of them. Of the fourteen change-related
 incidents recorded between February and September, four hit checkout-service
 and three were SEV1.
 
@@ -127,7 +127,7 @@ them. CRA never silently downgrades or overrides them.
 
 **7. What data does CRA use, and how is it handled?**
 
-This build uses synthetic data only: twelve fictional change-related incidents,
+This build uses synthetic data only: twenty fictional change-related incidents,
 plus a dependency graph and health and freeze-window snapshots covering eight
 services, along with sample postmortems and runbooks. It uses no
 production systems, real incident records, or customer data. Change

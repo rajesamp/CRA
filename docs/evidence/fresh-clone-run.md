@@ -35,7 +35,9 @@ completes the last step with a real key.
 Run this only after [rajesamp/CRA#1](https://github.com/rajesamp/CRA/pull/1)
 has merged, so the clone of `main` has the updated README. The teammate
 follows the README from a new clone with their own API key (or Vertex AI
-access), types `hello`, and gets a one-sentence reply from the model. They
+access): `uv sync`, `uv run python -m cra.ingest`, `uv run pytest -q`, then asks
+the checkout-service question from "Check it works" and gets a cited risk
+rating ending with the advisory line. They
 then add a row below in a follow-up commit and comment on PR #1 with a
 screenshot or pasted output (comments still work after merge).
 

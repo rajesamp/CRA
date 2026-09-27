@@ -8,19 +8,21 @@ Beyond Vectors check-in.
 
 Status key: ✅ done · 🟡 partial · ❌ not started
 
-## Snapshot — 2026-09-27 (start of Week 2, updated same day)
+## Snapshot — 2026-09-27 (start of Week 2, end of day)
 
 | Week | Dates (check-in Sunday) | Tasks | Done | Partial | Not started |
 |---|---|---|---|---|---|
-| 1 — Foundations, RAG & UI | Sep 20 – Sep 26 | 11 | 1 | 4 | 6 |
+| 1 — Foundations, RAG & UI | Sep 20 – Sep 26 | 11 | 5 | 6 | 0 |
 | 2 — Tools, MCP & Memory | Sep 27 – Oct 3 | 7 | 0 | 0 | 7 |
 | 3 — Guardrails & Caching | Oct 4 – Oct 10 | 7 | 0 | 0 | 7 |
 | 4 — Observability, Evals & Demo | Oct 11 – Oct 17 | 9 | 0 | 1 | 8 |
-| **Total** | | **34** | **1** | **5** | **28** |
+| **Total** | | **34** | **5** | **7** | **22** |
 
 - No commits from 2026-09-22 (`4739d5b`) until the Week 1 docs and data work on 2026-09-27.
 - Week 1 demo goal (Gradio UI giving a RAG-grounded risk assessment, plus
-  6-pager and PR/FAQ): **not met**.
+  6-pager and PR/FAQ): **built, pending model access and team approvals.** The
+  pipeline, agent, and UI run and are tested; the grounded-answer transcripts
+  need a Gemini API key, and the two documents need team approval.
 - Week 2 tasks all depend on the Week 1 pipeline (#6–#11), so Week 1 closes first.
 
 ## Week 1 — Foundations, RAG & UI
@@ -31,16 +33,16 @@ past incidents; plus a 6-pager and a PR/FAQ.
 | # | Task | Status | Evidence / gap |
 |---|---|---|---|
 | 1 | Kickoff: roles, requirements read, stack agreed | ✅ | `docs/team.md` has roles, stack, and read confirmation. |
-| 2 | Amazon-style 6-pager | 🟡 | Skeleton `docs/6-pager.md` (required headings, prompts, persona note, sign-off table) and study guide on branch `task/02-six-pager`, draft PR [rajesamp/CRA#2](https://github.com/rajesamp/CRA/pull/2). Sections not written yet; team approval on that PR after all sections are written. |
-| 3 | PR/FAQ (≥5 FAQs incl. data handling + advisory-only) | 🟡 | `docs/pr-faq.md` drafted: press release from Raj Sam's point of view, 13 FAQs (data handling #7, advisory-only #2 and #9, dependencies #13), persona note for reviewers. Waiting on team approval of [rajesamp/CRA#1](https://github.com/rajesamp/CRA/pull/1) and sign-off rows. |
+| 2 | Amazon-style 6-pager | 🟡 | Complete memo on `task/02-six-pager`, PR [rajesamp/CRA#2](https://github.com/rajesamp/CRA/pull/2): all sections written as prose from Raj Sam's answers, about 2,800 words, appendix with data and risk summary. **Pending: team approval + sign-off rows.** |
+| 3 | PR/FAQ (≥5 FAQs incl. data handling + advisory-only) | 🟡 | `docs/pr-faq.md`: press release from Raj Sam's point of view, 13 FAQs (data handling #7, advisory-only #2 and #9, dependencies #13). **Pending: team approval of [rajesamp/CRA#1](https://github.com/rajesamp/CRA/pull/1) + sign-off rows.** |
 | 4 | Repo, branch strategy, .gitignore, README | 🟡 | Branching convention documented in README (`main` + `task/<n>-<slug>` branches via PR). README now runs from a fresh clone with a Gemini API key or Vertex AI; clean-room run recorded in `docs/evidence/fresh-clone-run.md`. `.gitignore` fixed so the dataset can be committed. **Pending: after PR #1 merges, a teammate clones `main`, runs it, and adds their evidence row.** |
-| 5 | System prompt (advisory only, cite evidence) + 2 test transcripts | ❌ | `agent.py` still has the hello-agent instruction. |
-| 6 | Synthetic dataset: incidents, dependency graph, health snapshots | 🟡 | `data/incidents.json` (12 incidents, 5 services, incl. INC-1987 and INC-2055 with synthetic root causes), `dependencies.json` (10 edges, 8 services), `health.json` (8 services); provenance and summary counts in `data/README.md`. Gap: 5 services have fewer than 2 incidents (DoD: multiple past incidents each). |
-| 7 | RAG corpus covering all 6 sample queries | ❌ | No `corpus/`. |
-| 8 | Ingestion pipeline (chunk + embed into vector store) | ❌ | — |
-| 9 | Retrieval test: checkout-service chunk in top 3 | ❌ | — |
-| 10 | Minimal prototype: change → grounded assessment | ❌ | — |
-| 11 | Gradio chat UI + shareable link | ❌ | `gradio` not in `pyproject.toml`. |
+| 5 | System prompt (advisory only, cite evidence) + 2 test transcripts | 🟡 | `cra/prompts/system_prompt.md` wired into `agent.py`; rules checked by `tests/test_cra.py`. `scripts/run_evidence.py` runs both test prompts with automated checks. **Pending: model access to generate `docs/evidence/system-prompt-tests.md`.** |
+| 6 | Synthetic dataset: incidents, dependency graph, health snapshots | ✅ | `data/incidents.json` (20 incidents, every one of 8 services has ≥2), `dependencies.json`, `health.json`; provenance and summary counts in `data/README.md`; consistency checked by tests. |
+| 7 | RAG corpus covering all 6 sample queries | ✅ | `corpus/`: 40 documents (10 postmortems, 20 incident summaries, 10 runbooks); coverage table for all 6 sample queries in `corpus/README.md`. |
+| 8 | Ingestion pipeline (chunk + embed into vector store) | ✅ | `uv run python -m cra.ingest`: 40 documents → 72 chunks in ChromaDB (local embeddings, no key). Log: `docs/evidence/ingestion-log.md`. |
+| 9 | Retrieval test: checkout-service chunk in top 3 | ✅ | INC-2201 postmortem ranks 1st; judged CORRECT in `docs/evidence/retrieval-test.md`. All 6 sample queries checked in tests. |
+| 10 | Minimal prototype: change → grounded assessment | 🟡 | Agent with `search_incidents` tool; full loop proven with a scripted stand-in model in tests. **Pending: model access to record `docs/evidence/prototype-run.md`.** |
+| 11 | Gradio chat UI + shareable link | 🟡 | `app.py` launches (screenshot `docs/evidence/gradio-ui.png`); missing-key errors shown in chat. **Pending: a grounded answer screenshot with model access, and a share link (`CRA_SHARE=1`) posted to the team channel.** |
 
 ## Week 2 — Tools, MCP & Memory
 
@@ -89,20 +91,26 @@ on-demand approval refusal.
 | 33 | Demo script (Raj Sam persona, live queries, memory, scorecard) | ❌ | — |
 | 34 | Final rehearsal, deployed build, backup video in README | ❌ | — |
 
-## Catch-up plan (this week)
+## Remaining Week 1 steps
 
-1. Critical path, in order: #6 dataset → #7 corpus → #8 ingestion → #9
-   retrieval → #10 prototype → #11 Gradio. This alone meets the Week 1 demo.
-2. In parallel: #5 system prompt (feeds #10).
-3. Writing, no code dependency: #2 6-pager sections on `task/02-six-pager`.
-4. Then Week 2 (#12–#18).
+Blocked on model access (one command closes three tasks):
+
+1. Add a Gemini API key as `GOOGLE_API_KEY` (in `.env` locally, or in the
+   cloud environment's settings for Claude sessions).
+2. Run `uv run python scripts/run_evidence.py` to generate the system-prompt
+   tests (#5) and the prototype run (#10).
+3. Run `uv run python app.py`, ask the checkout-service question, and save a
+   screenshot of the grounded answer; run with `CRA_SHARE=1` and post the link
+   (#11).
 
 People steps, in this order:
 
 1. Team approves and merges PR #1 (closes the #3 approval).
 2. A teammate clones `main`, runs it from the README, and records the result
    in `docs/evidence/fresh-clone-run.md` (closes #4).
-3. Once every 6-pager section is written, the team approves PR #2 (closes #2).
+3. The team approves PR #2 and adds sign-off rows (closes #2).
+
+Then Week 2 (#12–#18).
 
 ## Other findings
 
@@ -114,4 +122,4 @@ People steps, in this order:
 
 | Date | Done | Partial | Not started | Note |
 |---|---|---|---|---|
-| 2026-09-27 | 1 | 5 | 28 | First snapshot; Week 1 demo goal not met. Same day: #2 skeleton (PR #2), #3 draft, runnable README, dataset seed, golden eval cases. |
+| 2026-09-27 | 5 | 7 | 22 | First snapshot, updated end of day: dataset, corpus, ingestion, retrieval done; prompt, agent, UI built; 6-pager complete; model transcripts and approvals pending. |

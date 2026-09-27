@@ -18,6 +18,51 @@
     "source": "postmortem_table+synthetic_root_cause"
   },
   {
+    "incident_id": "INC-2071",
+    "service": "order-service",
+    "date": "2025-12-03",
+    "change_type": "Schema migration",
+    "severity": "SEV2",
+    "root_cause": "Order status column made non-nullable before the backfill finished; order creation failed for clients still sending the old payload",
+    "source": "synthetic"
+  },
+  {
+    "incident_id": "INC-2098",
+    "service": "inventory-service",
+    "date": "2026-01-12",
+    "change_type": "Dependency upgrade",
+    "severity": "SEV3",
+    "root_cause": "ORM minor upgrade changed the default transaction isolation level; stock reservation counts drifted until a manual reconciliation",
+    "source": "synthetic"
+  },
+  {
+    "incident_id": "INC-2112",
+    "service": "web-frontend",
+    "date": "2026-01-20",
+    "change_type": "Dependency upgrade",
+    "severity": "SEV3",
+    "root_cause": "Frontend build tool upgrade dropped a polyfill; the checkout button stopped working on older browsers",
+    "source": "synthetic"
+  },
+  {
+    "incident_id": "INC-2139",
+    "service": "notification-service",
+    "date": "2026-01-27",
+    "change_type": "Infra change",
+    "severity": "SEV3",
+    "root_cause": "Queue consumer replicas cut from 6 to 2 in a cost cleanup; order confirmation emails were delayed by up to 40 minutes",
+    "source": "synthetic"
+  },
+  {
+    "incident_id": "INC-2166",
+    "service": "mobile-frontend",
+    "date": "2026-02-05",
+    "change_type": "Feature flag rollout",
+    "severity": "SEV3",
+    "root_cause": "New in-app payment sheet flag enabled without a minimum app-version check; the app crashed on versions older than 5.2",
+    "source": "synthetic"
+  },
+  {
     "incident_id": "INC-2201",
     "service": "checkout-service",
     "date": "2026-02-14",
@@ -36,6 +81,15 @@
     "source": "course_sample"
   },
   {
+    "incident_id": "INC-2229",
+    "service": "web-frontend",
+    "date": "2026-04-01",
+    "change_type": "Infra change",
+    "severity": "SEV3",
+    "root_cause": "CDN cache TTL on HTML pages raised from 60 s to 1 hour; shoppers saw stale prices for up to an hour after a price update",
+    "source": "synthetic"
+  },
+  {
     "incident_id": "INC-2233",
     "service": "checkout-service",
     "date": "2026-04-22",
@@ -43,6 +97,15 @@
     "severity": "SEV2",
     "root_cause": "Flag enabled for 100% before canary completed",
     "source": "course_sample"
+  },
+  {
+    "incident_id": "INC-2248",
+    "service": "order-service",
+    "date": "2026-05-02",
+    "change_type": "Feature flag rollout",
+    "severity": "SEV2",
+    "root_cause": "Order-splitting flag enabled for all regions at once instead of by canary; duplicate order records were created until the flag was turned off",
+    "source": "synthetic"
   },
   {
     "incident_id": "INC-2255",
@@ -106,5 +169,14 @@
     "severity": "SEV3",
     "root_cause": "Session token flag mismatch across regions",
     "source": "course_sample"
+  },
+  {
+    "incident_id": "INC-2341",
+    "service": "mobile-frontend",
+    "date": "2026-09-10",
+    "change_type": "Feature flag rollout",
+    "severity": "SEV2",
+    "root_cause": "Mobile session-refresh flag did not match the auth-service token flag change (INC-2340); users were logged out in two regions",
+    "source": "synthetic"
   }
 ]

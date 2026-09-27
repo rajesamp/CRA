@@ -224,43 +224,51 @@ own words, linked to their source, and never presented as the team's own history
 
 ## Key Risks & Mitigations
 
-The most serious risk is fabricated evidence: CRA citing an incident that does
-not exist, or stating a freeze status or dependency it did not check. It is
-likely without controls, because language models fill gaps fluently, and the
-impact is high, because a reviewer who trusts a false "no freeze" could ship
-into a freeze window. We mitigate it in three layers: the system prompt
-requires a source for every claim, the guardrail check compares every health,
-freeze, and dependency statement against the tool results from the same
-request, and the golden eval tests it with a request that has no evidence
-behind it.
+We rate each risk by likelihood and impact before mitigation. The summary is in
+Appendix F.
+
+The biggest risk is fabricated evidence: CRA citing an incident that doesn't
+exist, or stating a freeze status or dependency it never checked. Likelihood is
+high without controls, because language models fill gaps fluently. Impact is
+high, because a reviewer who trusts a false "no freeze" ships into a freeze
+window, and it breaks our first goal outright. We mitigate it in three layers.
+The system prompt requires a source for every claim. The guardrail check
+compares every incident ID against the corpus and every health, freeze, and
+dependency statement against the tool results from the same request. The golden
+eval tests it directly, including a request with no evidence behind it, where
+the only correct answer is "unconfirmed".
 
 The second risk is over-trust. Even an accurate advisor can train reviewers to
-stop thinking and accept its recommendation, and the risk grows as the tool
-proves useful. We mitigate it by design rather than by policy: every answer
-states that a human decision is required, CRA never produces an approve or
-reject verdict, and the evidence is always shown alongside the recommendation
-so the reviewer can disagree with it.
+stop reading and follow the rating, which is rubber-stamping arriving by habit
+instead of by design. Likelihood is medium and grows as CRA proves useful.
+Impact is high. We mitigate it through the design rather than a policy. Every
+answer ends by saying the decision is the reviewer's. CRA gives a rating with
+reasons, never a verdict. The evidence is always on screen next to the rating,
+so the reviewer can see what it rests on and disagree with it.
 
-The third risk is silent tool failure. If the health or dependency check times
-out and CRA answers anyway, the assessment rests on nothing. This will happen at
-some point, and the impact is high. CRA labels any unanswered check as
-unconfirmed, for example "I couldn't confirm the freeze calendar right now;
-treat freeze status as unconfirmed," and every failure is logged and counted on
-the observability dashboard so we can see how often it happens.
+The third risk is silent tool failure: the health or dependency check times out
+and CRA answers anyway, so the risk read rests on nothing. Likelihood is medium;
+tools will fail at some point. Impact is high. CRA marks any check it couldn't
+complete as unconfirmed, for example "I couldn't confirm the freeze calendar
+right now; treat freeze status as unconfirmed." Every failure is logged and
+counted on the observability dashboard, so we can see how often it happens and
+how CRA handled it.
 
-The fourth risk is that stored team settings are overridden. If CRA decided on
-its own that checkout-service no longer looked high-risk, it would erase a
-decision the team made after INC-2201. The likelihood is moderate and the
-impact is high, because the flag exists precisely for the changes that look
-safe. CRA treats stored settings as fixed until the team changes them, and when
-the evidence and a setting disagree it reports both and leaves the choice to
-the team.
+The fourth risk is that a stored team setting gets overridden. If a high-risk
+flag on checkout-service were dropped, it would erase a decision the team made
+after INC-2201. Likelihood is medium, since one careless chat message could do
+it. Impact is high, because the flag exists for exactly the changes that look
+safe. CRA saves a setting change only after repeating it back and getting
+explicit confirmation, logs every downgrade, and never changes a setting on its
+own judgement. When the evidence and a setting disagree, it shows both and
+leaves the call to the team.
 
-The fifth risk is data exposure. Real postmortems can contain names, customer
-details, and credentials. This build avoids the risk by using synthetic data
-and summarised public postmortems only. Before any real rollout, postmortems
-would need redaction before indexing and access controls matching the incident
-tracker.
+One risk stays open after mitigation. Everything above is tested on a synthetic
+dataset of twelve incidents and eight services. Real incident history is larger
+and messier: inconsistent postmortems, missing root causes, services that get
+renamed. Results on our data may not hold on real data. We will not claim
+otherwise at the demo. Before anyone relies on CRA's numbers, it would need a
+pilot on real, redacted incident history.
 
 ## Success Metrics
 
@@ -352,6 +360,16 @@ chat with explicit confirmation, with every downgrade logged.
 - Requirements: [Sep-Projects/ChangeRiskAdvisor/requirements.md](https://github.com/abhineer/Sep-Projects/blob/main/ChangeRiskAdvisor/requirements.md)
 - Golden eval: `data/golden_eval.json`
 - Decision records: `docs/adr/`
+
+### F. Risk summary (before mitigation)
+
+| Risk | Likelihood | Impact | Main mitigation |
+|---|---|---|---|
+| Fabricated evidence | High | High | Guardrail checks IDs against the corpus and facts against tool results; golden eval |
+| Over-trust | Medium | High | Advisory line on every answer; rating with reasons, never a verdict; evidence on screen |
+| Silent tool failure | Medium | High | "Unconfirmed" labels; failures logged and counted on the dashboard |
+| Stored setting overridden | Medium | High | Chat confirmation; logged downgrades; never changed on CRA's own judgement |
+| Synthetic data may not generalise (open) | — | — | Pilot on real, redacted history before relying on results |
 
 ---
 

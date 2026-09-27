@@ -27,45 +27,42 @@ the demo in mid-October.
 
 ## Problem
 
-The changes that cause outages rarely look dangerous when they are reviewed.
-Our incident record shows it. Of the twelve change-related incidents on record
-between September 2025 and September 2026, four were caused by configuration
-changes, and all four were rated SEV1 or SEV2; two of them were SEV1. A
-configuration change can look like a one-value edit, yet every one of these
-four became a serious incident.
+On 14 February 2026, a change to checkout-service lowered the timeout on its
+calls to payment-gateway from 5,000 ms to 500 ms. Reviewers rated it a
+low-risk config tweak, so it skipped load testing at production traffic. It
+deployed at 14:02 UTC. At 14:10 a promotional email tripled traffic, and the
+shorter timeout turned slow payment responses into failures. Checkout success
+dropped 42% for 38 minutes. About 1,150 checkout attempts failed or stalled
+before the change was rolled back at 14:40. That incident is INC-2201, a SEV1.
 
-INC-2201 is the clearest case. On 14 February 2026 a change lowered
-checkout-service's timeout for calls to payment-gateway from 5,000 ms to
-500 ms. Reviewers classified it as a low-risk configuration tweak, so it did
-not go through load testing at production traffic levels. It deployed at 14:02
-UTC. At 14:10 a promotional email tripled traffic, and the shorter timeout
-turned ordinary slow responses into payment failures. Checkout success dropped
-42% for 38 minutes and about 1,150 checkout attempts failed or stalled before
-the change was rolled back at 14:40.
+The warning signs were already on record. payment-gateway had failed twice in
+the six months before: INC-1987, a config change in September 2025 (SEV2), and
+INC-2055, a dependency upgrade in November 2025 (SEV1). Neither came up in the
+review. Nobody reviewing the change had them in front of them, and nothing put
+them there. The postmortem's action items say it plainly: checkout-service and
+payment-gateway should have been flagged as high-risk.
 
-The information that would have stopped this change already existed. The
-payment-gateway dependency had failed twice in the previous six months:
-INC-1987, a configuration change in September 2025, and INC-2055, a dependency
-upgrade in November 2025. Neither came up in the review, because nobody
-reviewing the change had them in mind and nothing put them in front of the
-reviewer. The postmortem's own action items say checkout-service and
-payment-gateway should have been flagged as high-risk. The history was there;
-it wasn't available at the moment of decision.
+The history kept repeating after the postmortem. payment-gateway had two more
+change-related incidents: INC-2214, a client library mismatch after a
+dependency upgrade in March 2026 (SEV2), and INC-2318, a rate limit lowered
+below peak traffic in August 2026 (SEV1). That is five incidents on one
+dependency path in twelve months, and each review started without the ones
+before it.
 
-The pattern continued after the postmortem. payment-gateway has since had two
-more change-related incidents: INC-2214, a client library version mismatch
-after a dependency upgrade in March, and INC-2318, a rate limit lowered below
-peak traffic in August, rated SEV1. checkout-service had three more of its own,
-in April, July, and August. Between them, these two services account for eight
-of the twelve incidents on record.
+The pattern holds beyond one service. Of the twelve change-related incidents
+on record, four came from config changes, and all four were SEV1 or SEV2. Two
+were SEV1. A config change can look like a one-value edit, which is exactly why
+it gets waved through without anyone checking what happened the last time.
 
-The cost of the current process is not only outages. A reviewer who wants to
-be thorough has to check four separate sources for every change: incident
-history, service health, the freeze calendar, and the dependency graph. At a
-dozen changes a day, that is dozens of lookups, so in practice the checks get
-skipped for changes that look small. The problem is that the context needed to
-judge a change's risk is scattered, and the changes that need it most are the
-ones least likely to get it.
+The cost is not only the outages. On a release-day spike, a reviewer has two
+bad options. They can stop and dig through the incident tracker for every
+change, reading postmortems and matching root causes, and slow the whole
+release down. Or they can ship on memory and hope nothing like this has broken
+before. Most spike days, memory wins, because the release has to go out. Either
+way something loses: speed, or safety.
+
+The history that would stop a risky change exists. It just isn't in front of
+the reviewer when they decide.
 
 ## Customer
 

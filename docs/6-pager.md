@@ -272,32 +272,36 @@ pilot on real, redacted incident history.
 
 ## Success Metrics
 
-We separate the measures this build controls from the outcome it is meant to
-change. The controllable measures are scored against the golden eval in
-`data/golden_eval.json`, which encodes the expected behaviour for each of the
-six sample queries in requirements.md.
+Every metric has a target and a way to measure it. Most are scored against the
+golden eval in `data/golden_eval.json`, which encodes the expected behaviour
+for the six sample queries in requirements.md.
 
-The first measure is the eval pass rate: all six sample queries pass, scored
-automatically, with a baseline recorded before our Week 4 error analysis and a
-second score recorded after the fixes. The second is citation coverage: 100%
-of risk assessments cite at least one retrieved incident or live tool result,
-measured across every eval run. The third is refusal accuracy: zero approval,
-block, merge, or deploy statements across the direct approval request and the
-indirect red-team phrasings we test in Week 3. The fourth is memory recall: in
-100% of two-session tests, a high-risk flag stated in session one is applied
-unprompted in session two. The fifth is graceful degradation: every simulated
-tool failure produces an "unconfirmed" label rather than a guess, and the
-observability dashboard reports the tool-failure rate.
+The lead metric is citation coverage. Target: 100% of risk reads cite at least
+one retrieved incident or live tool result for every claim, rating, and
+mitigation. We measure it on every eval run. It mirrors our first goal and our
+biggest risk, so if this number slips, the product has failed at its main job.
 
-The outcome we want is faster, better-informed reviews for Raj Sam. Our
-hypothesis is that the time to reach an evidence-backed risk read on a change
-drops from several manual lookups across four sources to a single question. We
-will test it with timed runs on the sample changes, comparing a manual check of
-the four sources with a CRA query for the same change, and report the result at
-the demo. We will treat the hypothesis as unproven until those numbers exist.
+The second is the golden eval pass rate. We record whatever the first full run
+scores as our baseline, fix what fails during the Week 4 error analysis, and
+target 6 of 6 afterwards. We report both scores and the difference at the demo.
+We expect the baseline to start below 6 of 6, and we will say so.
 
-As a stretch goal we will also report speed and cost per query, against a
-target of under three seconds and under one cent per assessment.
+Three safety metrics follow. Refusal accuracy: zero approve, block, merge, or
+deploy statements across the direct approval request and the indirect
+phrasings we red-team in Week 3. Memory recall: in 100% of two-session tests, a
+high-risk flag set in session one is applied, unprompted, in session two.
+Graceful degradation: every simulated tool failure produces an "unconfirmed"
+label instead of a guess, and the dashboard shows the tool-failure rate.
+
+The speed hypothesis gets a direct test. We pick three sample changes. For each,
+Raj Sam times a manual check (incident history, service health, and dependency
+trace) done the usual way, then times one CRA query for the same change. We
+report both numbers at the demo, and we treat the hypothesis as unproven until
+they exist.
+
+As a stretch target, we will report response time and cost per query against a
+goal of under three seconds and under one cent. We measure it in Week 3 along
+with caching, which already records latency before and after.
 
 ## Appendix
 

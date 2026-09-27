@@ -1,10 +1,18 @@
+from pathlib import Path
+
 from google.adk.agents import LlmAgent
 
+try:
+    from .cra.rag import search_incidents
+except ImportError:  # imported as a top-level module (tests, scripts)
+    from cra.rag import search_incidents
+
+INSTRUCTION = (Path(__file__).parent / "cra" / "prompts" / "system_prompt.md").read_text()
+
 root_agent = LlmAgent(
-    name="cra_hello",
+    name="change_risk_advisor",
     model="gemini-2.5-flash",
-    instruction=(
-        "You are the ChangeRiskAdvisor (CRA) hello agent. "
-        "Reply in one short sentence and state you are not yet wired to tools."
-    ),
+    description="Advisory-only pre-deployment change-risk assessment with cited evidence.",
+    instruction=INSTRUCTION,
+    tools=[search_incidents],
 )

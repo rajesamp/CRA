@@ -1,0 +1,42 @@
+[
+  {
+    "service": "checkout-service",
+    "depends_on": "payment-gateway"
+  },
+  {
+    "service": "checkout-service",
+    "depends_on": "inventory-service"
+  },
+  {
+    "service": "checkout-service",
+    "depends_on": "auth-service"
+  },
+  {
+    "service": "payment-gateway",
+    "depends_on": "notification-service"
+  },
+  {
+    "service": "order-service",
+    "depends_on": "checkout-service"
+  },
+  {
+    "service": "order-service",
+    "depends_on": "inventory-service"
+  },
+  {
+    "service": "web-frontend",
+    "depends_on": "order-service"
+  },
+  {
+    "service": "web-frontend",
+    "depends_on": "auth-service"
+  },
+  {
+    "service": "mobile-frontend",
+    "depends_on": "order-service"
+  },
+  {
+    "service": "mobile-frontend",
+    "depends_on": "auth-service"
+  }
+]

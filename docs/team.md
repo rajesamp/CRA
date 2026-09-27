@@ -5,6 +5,11 @@
 fast evidence-backed risk reads. Advisory only: the agent never approves,
 blocks, merges, or deploys.
 
+> **Note for the mentor:** this project uses Raj Sam as the persona throughout
+> (docs, prompts, data, demo), in place of the persona name in
+> requirements.md. The persona's role, daily workload, goals, and constraints
+> are unchanged from the spec.
+
 ## Roles
 Solo build (capstone format): all ownership below is Raj Sam's.
 

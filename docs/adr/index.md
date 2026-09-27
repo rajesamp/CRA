@@ -11,6 +11,7 @@ Accepted as each decision is implemented.
 | [ADR-004](adr-004-guardrails.md) | ADK callbacks over separate classifier layer | Proposed |
 | [ADR-005](adr-005-mcp-vs-functiontools.md) | FastMCP server over plain FunctionTools | Proposed |
 | [ADR-006](adr-006-deployment.md) | Hardened Cloud Run over ADK Agent Runtime | Proposed |
+| [ADR-007](adr-007-dataset-sources.md) | Synthetic core dataset plus summarised public postmortems in the RAG corpus | Proposed |
 
 Format: MADR-lite (Status / Context / Decision / Alternatives / Consequences).
 Template: [adr-template.md](adr-template.md). Running notes live in

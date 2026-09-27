@@ -16,13 +16,10 @@ build/
 .eval_results/
 .rag_data/
 
-# Runtime data
+# Runtime data (generated; the synthetic dataset in data/ IS committed, task #6)
 chroma/
 sessions.db
 *.sqlite3
-data/health.json
-data/incidents.json
-data/dependencies.json
 
 # OS / editor
 .DS_Store

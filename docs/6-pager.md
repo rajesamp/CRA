@@ -50,7 +50,7 @@ below peak traffic in August 2026 (SEV1). That is five incidents on one
 dependency path in twelve months, and each review started without the ones
 before it.
 
-The pattern holds beyond one service. Of the twelve change-related incidents
+The pattern holds beyond one service. Of the twenty change-related incidents
 on record, four came from config changes, and all four were SEV1 or SEV2. Two
 were SEV1. A config change can look like a one-value edit, which is exactly why
 it gets waved through without anyone checking what happened the last time.
@@ -265,7 +265,7 @@ own judgement. When the evidence and a setting disagree, it shows both and
 leaves the call to the team.
 
 One risk stays open after mitigation. Everything above is tested on a synthetic
-dataset of twelve incidents and eight services. Real incident history is larger
+dataset of twenty incidents and eight services. Real incident history is larger
 and messier: inconsistent postmortems, missing root causes, services that get
 renamed. Results on our data may not hold on real data. We will not claim
 otherwise at the demo. Before anyone relies on CRA's numbers, it would need a
@@ -312,9 +312,16 @@ with caching, which already records latency before and after.
 |---|---|---|---|---|---|
 | INC-1987 | payment-gateway | 2025-09-02 | Config change | SEV2 | Card-processor connect timeout lowered below peak p99 latency (synthetic) |
 | INC-2055 | payment-gateway | 2025-11-19 | Dependency upgrade | SEV1 | Client upgrade shrank the default connection pool (synthetic) |
+| INC-2071 | order-service | 2025-12-03 | Schema migration | SEV2 | Status column made non-nullable before backfill finished (synthetic) |
+| INC-2098 | inventory-service | 2026-01-12 | Dependency upgrade | SEV3 | ORM upgrade changed transaction isolation (synthetic) |
+| INC-2112 | web-frontend | 2026-01-20 | Dependency upgrade | SEV3 | Build tool upgrade dropped a polyfill (synthetic) |
+| INC-2139 | notification-service | 2026-01-27 | Infra change | SEV3 | Queue consumers cut from 6 to 2 (synthetic) |
+| INC-2166 | mobile-frontend | 2026-02-05 | Feature flag rollout | SEV3 | Payment sheet flag without app-version check (synthetic) |
 | INC-2201 | checkout-service | 2026-02-14 | Config change | SEV1 | Payment timeout misconfigured during release |
 | INC-2214 | payment-gateway | 2026-03-03 | Dependency upgrade | SEV2 | Client library version mismatch |
+| INC-2229 | web-frontend | 2026-04-01 | Infra change | SEV3 | CDN cache TTL raised; stale prices (synthetic) |
 | INC-2233 | checkout-service | 2026-04-22 | Feature flag rollout | SEV2 | Flag enabled for 100% before canary completed |
+| INC-2248 | order-service | 2026-05-02 | Feature flag rollout | SEV2 | Order-splitting flag enabled in all regions at once (synthetic) |
 | INC-2255 | auth-service | 2026-05-10 | Infra change | SEV1 | Connection pool size reduced too aggressively |
 | INC-2270 | inventory-service | 2026-06-01 | Schema migration | SEV3 | Backward-incompatible column drop |
 | INC-2289 | checkout-service | 2026-07-18 | Config change | SEV2 | Retry timeout set too low under load |
@@ -322,10 +329,12 @@ with caching, which already records latency before and after.
 | INC-2318 | payment-gateway | 2026-08-15 | Config change | SEV1 | Rate limit lowered below peak traffic needs |
 | INC-2325 | checkout-service | 2026-08-30 | Infra change | SEV2 | Autoscaling threshold changed pre-peak |
 | INC-2340 | auth-service | 2026-09-10 | Feature flag rollout | SEV3 | Session token flag mismatch across regions |
+| INC-2341 | mobile-frontend | 2026-09-10 | Feature flag rollout | SEV2 | Session flag mismatched auth token change (synthetic) |
 
-INC-1987 and INC-2055 come from the related-incident table in the INC-2201
-postmortem; their root causes were written as synthetic data. Provenance for
-every record is in `data/README.md`.
+Ten records come from the course sample. INC-1987 and INC-2055 come from the
+related-incident table in the INC-2201 postmortem, with synthetic root causes.
+The other eight marked (synthetic) were written so every service has at least two
+incidents. Provenance for every record is in `data/README.md`.
 
 ### B. Service dependencies and current state
 

@@ -4,6 +4,21 @@ A study guide for task #2 of the ChangeRiskAdvisor plan. Read it once end to
 end (about 20 minutes), then keep the outline and checklist open while you
 write `docs/6-pager.md` section by section.
 
+## What "done" means for task #2
+
+From [tasks.md](https://github.com/abhineer/Sep-Projects/blob/main/ChangeRiskAdvisor/tasks.md),
+the grader checks three things, and the evidence is `docs/6-pager.md` in the repo:
+
+1. **Narrative.** Committed as a narrative document, with no slides or
+   bullet-only sections.
+2. **Complete and specific.** Every section of the standard format is present
+   (problem, customer, solution, goals & non-goals, key risks & mitigations,
+   success metrics) and specific to ChangeRiskAdvisor, not generic.
+3. **Agreed.** Reviewed and agreed on by the whole team: approved on the pull
+   request that adds the file, with a sign-off row per reviewer at the bottom.
+
+Everything below serves those three criteria.
+
 ## What a 6-pager is
 
 A 6-pager is a narrative memo of at most six pages, written in full sentences
@@ -127,9 +142,9 @@ appendix. The word budgets add up to about 3,000 words for the main body.
 | Problem | ~450 | What goes wrong today, how often, and what does it cost? |
 | Customer | ~400 | Who exactly has this problem, and what does their day look like? |
 | Solution | ~750 | What does Raj Sam experience with CRA, step by step? |
-| Goals and non-goals | ~400 | What will CRA do, and what will it deliberately never do? |
-| Key risks and mitigations | ~450 | What could make this fail or cause harm, and what do we do about it? |
-| Success metrics | ~400 | How will we know it works, with which numbers and targets? |
+| Goals & Non-Goals | ~400 | What will CRA do, and what will it deliberately never do? |
+| Key Risks & Mitigations | ~450 | What could make this fail or cause harm, and what do we do about it? |
+| Success Metrics | ~400 | How will we know it works, with which numbers and targets? |
 | Appendix | no limit | Data, dependency graph, glossary, open questions |
 
 ### Introduction (~150 words, write it last)
@@ -242,8 +257,8 @@ marking task #2 done.
       appendix.
 - [ ] A reader with no context could explain CRA back in three sentences.
 - [ ] It reads in 20 minutes or less.
-- [ ] Reviewed and agreed (course evidence): reviewer sign-off recorded at the
-      bottom of the memo.
+- [ ] Reviewed and agreed by the whole team: approved on the pull request, with
+      a sign-off row for each reviewer at the bottom of the memo.
 
 ## How we'll write it: section by section
 

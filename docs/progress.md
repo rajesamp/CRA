@@ -8,15 +8,15 @@ Beyond Vectors check-in.
 
 Status key: ✅ done · 🟡 partial · ❌ not started
 
-## Snapshot — 2026-09-27 (start of Week 2)
+## Snapshot — 2026-09-27 (start of Week 2, updated same day)
 
 | Week | Dates (check-in Sunday) | Tasks | Done | Partial | Not started |
 |---|---|---|---|---|---|
-| 1 — Foundations, RAG & UI | Sep 20 – Sep 26 | 11 | 1 | 1 | 9 |
+| 1 — Foundations, RAG & UI | Sep 20 – Sep 26 | 11 | 1 | 3 | 7 |
 | 2 — Tools, MCP & Memory | Sep 27 – Oct 3 | 7 | 0 | 0 | 7 |
 | 3 — Guardrails & Caching | Oct 4 – Oct 10 | 7 | 0 | 0 | 7 |
 | 4 — Observability, Evals & Demo | Oct 11 – Oct 17 | 9 | 0 | 0 | 9 |
-| **Total** | | **34** | **1** | **1** | **32** |
+| **Total** | | **34** | **1** | **3** | **30** |
 
 - Last commit: 2026-09-22 (`4739d5b`). No commits in the 5 days since.
 - Week 1 demo goal (Gradio UI giving a RAG-grounded risk assessment, plus
@@ -31,9 +31,9 @@ past incidents; plus a 6-pager and a PR/FAQ.
 | # | Task | Status | Evidence / gap |
 |---|---|---|---|
 | 1 | Kickoff: roles, requirements read, stack agreed | ✅ | `docs/team.md` has roles, stack, and read confirmation. |
-| 2 | Amazon-style 6-pager | ❌ | No `docs/6-pager.md`. |
-| 3 | PR/FAQ (≥5 FAQs incl. data handling + advisory-only) | ❌ | No `docs/pr-faq.md`. |
-| 4 | Repo, branch strategy, .gitignore, README | 🟡 | Repo, `.gitignore`, README exist. Only `main` branch (DoD wants feature branches); no teammate clone-and-run evidence; README spec link `../Sep-Projects/...` is broken on GitHub. |
+| 2 | Amazon-style 6-pager | 🟡 | `docs/6-pager.md` skeleton (all required headings, prompts, sign-off block) and study guide `docs/learning/6-pager-first-principles.md`. Sections not written yet; no team approval. |
+| 3 | PR/FAQ (≥5 FAQs incl. data handling + advisory-only) | 🟡 | `docs/pr-faq.md` drafted: press release from Raj Sam's point of view, 12 FAQs (data handling #7, advisory-only #2 and #9). Waiting on team approval and sign-off rows. |
+| 4 | Repo, branch strategy, .gitignore, README | 🟡 | Repo, `.gitignore`, README exist. One feature branch exists but no agreed, documented branch strategy; README needs a GCP project and gcloud login and has no clean-clone test; no teammate clone-and-run evidence; README spec link `../Sep-Projects/...` is broken on GitHub. `.gitignore` excludes `data/*.json`, which conflicts with task #6 (dataset must be committed). |
 | 5 | System prompt (advisory only, cite evidence) + 2 test transcripts | ❌ | `agent.py` still has the hello-agent instruction. |
 | 6 | Synthetic dataset: incidents, dependency graph, health snapshots | ❌ | No `data/`. Seeds available: `sample_data/change_risk_sample.xlsx`, `change_management_postmortem.pdf` in Sep-Projects. |
 | 7 | RAG corpus covering all 6 sample queries | ❌ | No `corpus/`. |
@@ -108,4 +108,4 @@ on-demand approval refusal.
 
 | Date | Done | Partial | Not started | Note |
 |---|---|---|---|---|
-| 2026-09-27 | 1 | 1 | 32 | First snapshot; Week 1 demo goal not met. |
+| 2026-09-27 | 1 | 3 | 30 | First snapshot; Week 1 demo goal not met. Same day: #2 skeleton and #3 draft added. |

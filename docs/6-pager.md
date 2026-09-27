@@ -3,6 +3,10 @@
 - **Author:** Raj Sam (DevOps engineer)
 - **Status:** Drafting section by section (guide: [learning/6-pager-first-principles.md](learning/6-pager-first-principles.md))
 - **Main body budget:** ~3,000 words. Supporting data goes in the appendix.
+- **Task:** #2 in [Sep-Projects/ChangeRiskAdvisor/tasks.md](https://github.com/abhineer/Sep-Projects/blob/main/ChangeRiskAdvisor/tasks.md).
+  Definition of done: a narrative document (no slides or bullet-only sections);
+  every section from the standard format present and specific to
+  ChangeRiskAdvisor, not generic; reviewed and agreed on by the whole team.
 
 <!-- Write order: Customer, Problem, Solution, Goals and non-goals, Success
 metrics, Risks and mitigations, Introduction, Appendix. Delete each prompt
@@ -37,18 +41,18 @@ live health and freeze status, dependents, high-risk flag from team memory,
 advisory-only reminder. Then one paragraph per capability. Stack in one short
 paragraph at the end. -->
 
-## Goals and non-goals
+## Goals & Non-Goals
 
 <!-- ~400 words. Goals are outcomes, not activities. Non-goals: never approve,
 block, merge, or deploy; no live CI/CD integration in this build; supports
 the team's change review rather than replacing it. Justify each. -->
 
-## Key risks and mitigations
+## Key Risks & Mitigations
 
 <!-- ~450 words. For each: likelihood, impact, mitigation. Fabricated evidence,
 tool failure, over-trust, stored risk settings overridden, sensitive data. -->
 
-## Success metrics
+## Success Metrics
 
 <!-- ~400 words. Each metric gets a target and a measurement method. Separate
 input metrics (eval pass rate, citation rate, zero approvals, memory recall)
@@ -62,4 +66,12 @@ decision records. -->
 
 ---
 
-**Review sign-off:** _pending_
+## Review sign-off
+
+Agreement is recorded as an approval on the pull request that adds this file,
+plus a row below for each reviewer.
+
+| Name | Role | Decision | Date | Approval link |
+|---|---|---|---|---|
+| Raj Sam | Author | _pending_ | | |
+| _reviewer_ | Team member or mentor | _pending_ | | |

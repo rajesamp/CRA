@@ -1,0 +1,398 @@
+# ChangeRiskAdvisor: 6-Pager
+
+- **Author:** Raj Sam (DevOps engineer)
+- **Persona note for reviewers:** this memo uses Raj Sam as the customer persona
+  in place of the persona name in requirements.md. The persona's role, daily
+  workload, goals, and constraints are unchanged from the spec.
+- **Status:** Complete draft, ready for team review
+  (guide: [learning/6-pager-first-principles.md](learning/6-pager-first-principles.md))
+- **Task:** #2 in [Sep-Projects/ChangeRiskAdvisor/tasks.md](https://github.com/abhineer/Sep-Projects/blob/main/ChangeRiskAdvisor/tasks.md).
+  Definition of done: a narrative document (no slides or bullet-only sections);
+  every section from the standard format present and specific to
+  ChangeRiskAdvisor, not generic; reviewed and agreed on by the whole team.
+
+## Introduction
+
+ChangeRiskAdvisor (CRA) gives the engineer reviewing a production change an
+evidence-backed risk read before they decide whether it ships. It puts the
+right past incidents, the service's current health and freeze status, and the
+services downstream of the change in front of the reviewer, with a source for
+every claim. It also applies the risk settings the team has agreed on. CRA
+advises. It never approves, blocks, merges, or deploys a change.
+
+This memo covers the problem, the engineer it serves, how CRA works, what it
+will and will not do, the risks, and how we will measure it over the four-week
+build. We are asking reviewers to agree on three things: the scope and
+non-goals, the success metrics we will be held to at the demo in mid-October,
+and the one open question in Appendix D.
+
+## Problem
+
+On 14 February 2026, a change to checkout-service lowered the timeout on its
+calls to payment-gateway from 5,000 ms to 500 ms. Reviewers rated it a
+low-risk config tweak, so it skipped load testing at production traffic. It
+deployed at 14:02 UTC. At 14:10 a promotional email tripled traffic, and the
+shorter timeout turned slow payment responses into failures. Checkout success
+dropped 42% for 38 minutes. About 1,150 checkout attempts failed or stalled
+before the change was rolled back at 14:40. That incident is INC-2201, a SEV1.
+
+The warning signs were already on record. payment-gateway had failed twice in
+the six months before: INC-1987, a config change in September 2025 (SEV2), and
+INC-2055, a dependency upgrade in November 2025 (SEV1). Neither came up in the
+review. Nobody reviewing the change had them in front of them, and nothing put
+them there. The postmortem's action items say it plainly: checkout-service and
+payment-gateway should have been flagged as high-risk.
+
+The history kept repeating after the postmortem. payment-gateway had two more
+change-related incidents: INC-2214, a client library mismatch after a
+dependency upgrade in March 2026 (SEV2), and INC-2318, a rate limit lowered
+below peak traffic in August 2026 (SEV1). That is five incidents on one
+dependency path in twelve months, and each review started without the ones
+before it.
+
+The pattern holds beyond one service. Of the twenty change-related incidents
+on record, four came from config changes, and all four were SEV1 or SEV2. Two
+were SEV1. A config change can look like a one-value edit, which is exactly why
+it gets waved through without anyone checking what happened the last time.
+
+The cost is not only the outages. On a release-day spike, a reviewer has two
+bad options. They can stop and dig through the incident tracker for every
+change, reading postmortems and matching root causes, and slow the whole
+release down. Or they can ship on memory and hope nothing like this has broken
+before. Most spike days, memory wins, because the release has to go out. Either
+way something loses: speed, or safety.
+
+The history that would stop a risky change exists. It just isn't in front of
+the reviewer when they decide.
+
+## Customer
+
+Our customer is Raj Sam, a DevOps engineer at a mid-size SaaS company. Raj Sam
+reviews proposed production changes across eight services, from
+checkout-service and payment-gateway to the web and mobile frontends: config
+updates, dependency upgrades, feature-flag rollouts, infra changes, and schema
+migrations. Some days bring a handful of changes. Release days bring a spike,
+and that is when the risky ones get through. Raj Sam knows some of these
+services deeply and others only by name.
+
+For every change, Raj Sam has to answer one question: will this hurt us, and
+should it ship now? Their first stop is the dashboards. Is the service healthy?
+Is anything already degraded or alerting? That check is quick, and it catches
+problems that exist today. It says nothing about what went wrong the last time
+someone made a change like this one.
+
+That second check, past incident history, is the one that gets skipped. Finding
+the right postmortems means searching the incident tracker, reading root causes,
+and matching them to the change in front of you. On a spike day there is no time
+for that, so Raj Sam falls back on memory. Memory only covers the incidents
+Raj Sam was around for. Nobody is on call for every incident on every service.
+INC-2201 is what that gap looks like: the history that would have flagged the
+change existed, and nobody reviewing it had it in front of them.
+
+Raj Sam also carries context no tool has. The biggest is peak events: a sale, a
+launch, or a marketing push that is about to multiply traffic. INC-2201 turned
+from a quiet config change into a SEV1 because a promotional email tripled
+traffic eight minutes after deploy. Raj Sam knows when those pushes are coming.
+A tool doesn't.
+
+What Raj Sam wants is simple. Paste in a change and get a fast risk read that
+cites similar past incidents and the current state of the system. Get flagged
+when a change touches a service the team has marked high-risk or lands in a
+freeze window. Let safe changes move faster because the evidence shows why
+they're safe, and give risky ones the second look they need.
+
+What Raj Sam will not give up is the decision. The tool advises; Raj Sam and
+the team make the go/no-go call. Their reason is rubber-stamping: the moment a
+bot can approve a change, people stop reading the change. An advisor keeps the
+reviewer reading. It puts the evidence in front of them and leaves the call
+with the person who knows about Friday's peak event.
+
+## Solution
+
+Replay INC-2201 with CRA in place. It is February 2026. The change lowering
+checkout-service's payment timeout from 5,000 ms to 500 ms lands in Raj Sam's
+queue on a busy afternoon. Raj Sam pastes it into CRA and asks: "How risky is
+this change to the checkout-service config?"
+
+CRA answers in one response. It rates the change **High** and gives its
+reasons, each with a source. First, history: payment-gateway, the service this
+timeout guards, failed twice in the last six months. INC-1987 was a config
+change that lowered a timeout below peak latency (SEV2), and INC-2055 was a
+dependency upgrade that exhausted connections at peak (SEV1). Second, system
+state: the system-health tool reports checkout-service's current status and
+whether a freeze window is active, and CRA repeats exactly what the tool
+returned. Third, blast radius: the dependency-graph tool shows that
+checkout-service calls payment-gateway, and that order-service, web-frontend,
+and mobile-frontend all sit downstream of checkout. A payment failure here is a
+customer-facing outage on web and mobile.
+
+CRA then suggests one mitigation, and only because the evidence supports it:
+INC-1987's root cause was a timeout set below peak latency, so CRA suggests
+checking the new 500 ms value against payment-gateway's peak p99 latency before
+release. It ends with the same line every answer ends with: this is advisory,
+and the decision to ship is Raj Sam's.
+
+That leaves the decision where it belongs. Raj Sam knows something CRA doesn't:
+a promotional email is scheduled for that afternoon. With INC-1987 and INC-2055
+on screen and a peak event coming, Raj Sam holds the change. The outage in the
+Problem section doesn't happen. Run the same change today, with INC-2201 in the
+corpus, and CRA also cites INC-2201 and its postmortem action item: load test
+any payment-gateway timeout change at three times baseline traffic.
+
+Four capabilities make that answer possible.
+
+**Retrieval over past incidents.** CRA searches a corpus of change-related
+postmortems, runbooks, and incident summaries for the incidents closest to the
+proposed change, by service, dependency, and change type. It cites each one by
+ID and root cause. If nothing similar exists, it says so. It never stretches an
+unrelated incident to fit.
+
+**Live checks.** Two tools report the current state of the system. The
+system-health tool returns a service's status, active incidents, and freeze
+status. The dependency-graph tool returns what a service depends on and what
+depends on it. CRA never infers any of this from service names. It states only
+what a tool returned in that request, and if a tool fails, it marks that part of
+the answer unconfirmed.
+
+**Team memory.** The team can tell CRA that "checkout-service is always
+high-risk," and CRA applies it in every later session without being reminded.
+Anyone can set or clear a flag in chat, but CRA repeats the change back and
+saves it only after explicit confirmation. Every downgrade is logged. CRA never
+changes a stored setting on its own judgement.
+
+**Guardrails.** A check runs on every response before Raj Sam sees it. It
+blocks any approve, block, merge, or deploy decision. It rejects a risk rating
+that arrives without cited reasons, and a mitigation that no cited incident
+supports. It confirms that every health, freeze, and dependency statement
+matches a tool result. A response that fails is corrected or marked
+unconfirmed, and the event is logged. Ask CRA to "just approve this change" and
+it declines, explains that approval is a human step, and offers to finish the
+risk assessment.
+
+CRA runs on Google's Agent Development Kit with `gemini-2.5-flash`, a ChromaDB
+vector store for the incident corpus, an MCP server for the two live tools, a
+SQLite session store for team memory, and a Gradio chat interface. The reasons
+for each choice are in the decision records under [docs/adr/](adr/index.md).
+
+## Goals & Non-Goals
+
+Each goal is an outcome we can check at the demo.
+
+The first goal is that every claim is cited. Every risk rating, reason, and
+mitigation CRA gives points to a retrieved incident or a live tool result from
+that request. Anything CRA can't support is marked unconfirmed, never guessed.
+This is the goal that answers the problem directly: it puts the history in
+front of the reviewer, with sources they can check.
+
+The second goal is that CRA passes all six sample queries in requirements.md,
+scored automatically against the golden eval. That includes the correct freeze
+status and the correct dependency list for payment-gateway. The third is that a
+high-risk flag set in one session is applied, unprompted, in the next. The
+fourth is that CRA refuses every request to approve a change, direct or
+indirect, and offers the risk assessment instead. The fifth is that when a tool
+fails, CRA says what it couldn't confirm instead of answering around the gap.
+
+The sixth goal is speed, and we state it as a hypothesis to test, not a claim.
+On a release-day spike, Raj Sam should get an evidence-backed risk read from one
+question instead of a trip through the incident tracker. We will time it on the
+sample changes and report what we find.
+
+The non-goals matter as much.
+
+CRA will never approve, block, merge, or deploy a change. The reason is
+rubber-stamping. The moment a tool can approve a change, reviewers stop reading
+the change, and INC-2201 shows what that costs: it was rated low-risk and became
+a SEV1. A tool that could approve would ship that label straight to production.
+An advisor that can't approve keeps the reviewer reading.
+
+CRA will not take automatic action, even when it rates a change High. It never
+rolls back, pauses a deploy, or edits config. Acting on its own rating would be
+approval by another name.
+
+CRA will not connect to live CI/CD pipelines, source control, or production
+monitoring in this build. requirements.md asks for a static or lightly simulated
+dataset, and a fixed dataset lets us test every answer against known facts. Live
+integration would bring access-control and data-handling questions this build
+doesn't need to answer yet.
+
+CRA will not replace the team's change review. It prepares the reviewer; the
+review and the people in it stay.
+
+CRA will not use real incident records or customer data. The core dataset is
+synthetic. Any real public postmortems added to the corpus are summarised in our
+own words, linked to their source, and never presented as the team's own history
+(ADR-007).
+
+## Key Risks & Mitigations
+
+We rate each risk by likelihood and impact before mitigation. The summary is in
+Appendix F.
+
+The biggest risk is fabricated evidence: CRA citing an incident that doesn't
+exist, or stating a freeze status or dependency it never checked. Likelihood is
+high without controls, because language models fill gaps fluently. Impact is
+high, because a reviewer who trusts a false "no freeze" ships into a freeze
+window, and it breaks our first goal outright. We mitigate it in three layers.
+The system prompt requires a source for every claim. The guardrail check
+compares every incident ID against the corpus and every health, freeze, and
+dependency statement against the tool results from the same request. The golden
+eval tests it directly, including a request with no evidence behind it, where
+the only correct answer is "unconfirmed".
+
+The second risk is over-trust. Even an accurate advisor can train reviewers to
+stop reading and follow the rating, which is rubber-stamping arriving by habit
+instead of by design. Likelihood is medium and grows as CRA proves useful.
+Impact is high. We mitigate it through the design rather than a policy. Every
+answer ends by saying the decision is the reviewer's. CRA gives a rating with
+reasons, never a verdict. The evidence is always on screen next to the rating,
+so the reviewer can see what it rests on and disagree with it.
+
+The third risk is silent tool failure: the health or dependency check times out
+and CRA answers anyway, so the risk read rests on nothing. Likelihood is medium;
+tools will fail at some point. Impact is high. CRA marks any check it couldn't
+complete as unconfirmed, for example "I couldn't confirm the freeze calendar
+right now; treat freeze status as unconfirmed." Every failure is logged and
+counted on the observability dashboard, so we can see how often it happens and
+how CRA handled it.
+
+The fourth risk is that a stored team setting gets overridden. If a high-risk
+flag on checkout-service were dropped, it would erase a decision the team made
+after INC-2201. Likelihood is medium, since one careless chat message could do
+it. Impact is high, because the flag exists for exactly the changes that look
+safe. CRA saves a setting change only after repeating it back and getting
+explicit confirmation, logs every downgrade, and never changes a setting on its
+own judgement. When the evidence and a setting disagree, it shows both and
+leaves the call to the team.
+
+One risk stays open after mitigation. Everything above is tested on a synthetic
+dataset of twenty incidents and eight services. Real incident history is larger
+and messier: inconsistent postmortems, missing root causes, services that get
+renamed. Results on our data may not hold on real data. We will not claim
+otherwise at the demo. Before anyone relies on CRA's numbers, it would need a
+pilot on real, redacted incident history.
+
+## Success Metrics
+
+Every metric has a target and a way to measure it. Most are scored against the
+golden eval in `data/golden_eval.json`, which encodes the expected behaviour
+for the six sample queries in requirements.md.
+
+The lead metric is citation coverage. Target: 100% of risk reads cite at least
+one retrieved incident or live tool result for every claim, rating, and
+mitigation. We measure it on every eval run. It mirrors our first goal and our
+biggest risk, so if this number slips, the product has failed at its main job.
+
+The second is the golden eval pass rate. We record whatever the first full run
+scores as our baseline, fix what fails during the Week 4 error analysis, and
+target 6 of 6 afterwards. We report both scores and the difference at the demo.
+We expect the baseline to start below 6 of 6, and we will say so.
+
+Three safety metrics follow. Refusal accuracy: zero approve, block, merge, or
+deploy statements across the direct approval request and the indirect
+phrasings we red-team in Week 3. Memory recall: in 100% of two-session tests, a
+high-risk flag set in session one is applied, unprompted, in session two.
+Graceful degradation: every simulated tool failure produces an "unconfirmed"
+label instead of a guess, and the dashboard shows the tool-failure rate.
+
+The speed hypothesis gets a direct test. We pick three sample changes. For each,
+Raj Sam times a manual check (incident history, service health, and dependency
+trace) done the usual way, then times one CRA query for the same change. We
+report both numbers at the demo, and we treat the hypothesis as unproven until
+they exist.
+
+As a stretch target, we will report response time and cost per query against a
+goal of under three seconds and under one cent. We measure it in Week 3 along
+with caching, which already records latency before and after.
+
+## Appendix
+
+### A. Incident record (`data/incidents.json`)
+
+| ID | Service | Date | Change type | Severity | Root cause |
+|---|---|---|---|---|---|
+| INC-1987 | payment-gateway | 2025-09-02 | Config change | SEV2 | Card-processor connect timeout lowered below peak p99 latency (synthetic) |
+| INC-2055 | payment-gateway | 2025-11-19 | Dependency upgrade | SEV1 | Client upgrade shrank the default connection pool (synthetic) |
+| INC-2071 | order-service | 2025-12-03 | Schema migration | SEV2 | Status column made non-nullable before backfill finished (synthetic) |
+| INC-2098 | inventory-service | 2026-01-12 | Dependency upgrade | SEV3 | ORM upgrade changed transaction isolation (synthetic) |
+| INC-2112 | web-frontend | 2026-01-20 | Dependency upgrade | SEV3 | Build tool upgrade dropped a polyfill (synthetic) |
+| INC-2139 | notification-service | 2026-01-27 | Infra change | SEV3 | Queue consumers cut from 6 to 2 (synthetic) |
+| INC-2166 | mobile-frontend | 2026-02-05 | Feature flag rollout | SEV3 | Payment sheet flag without app-version check (synthetic) |
+| INC-2201 | checkout-service | 2026-02-14 | Config change | SEV1 | Payment timeout misconfigured during release |
+| INC-2214 | payment-gateway | 2026-03-03 | Dependency upgrade | SEV2 | Client library version mismatch |
+| INC-2229 | web-frontend | 2026-04-01 | Infra change | SEV3 | CDN cache TTL raised; stale prices (synthetic) |
+| INC-2233 | checkout-service | 2026-04-22 | Feature flag rollout | SEV2 | Flag enabled for 100% before canary completed |
+| INC-2248 | order-service | 2026-05-02 | Feature flag rollout | SEV2 | Order-splitting flag enabled in all regions at once (synthetic) |
+| INC-2255 | auth-service | 2026-05-10 | Infra change | SEV1 | Connection pool size reduced too aggressively |
+| INC-2270 | inventory-service | 2026-06-01 | Schema migration | SEV3 | Backward-incompatible column drop |
+| INC-2289 | checkout-service | 2026-07-18 | Config change | SEV2 | Retry timeout set too low under load |
+| INC-2301 | notification-service | 2026-07-29 | Dependency upgrade | SEV3 | Deprecated API usage broke on upgrade |
+| INC-2318 | payment-gateway | 2026-08-15 | Config change | SEV1 | Rate limit lowered below peak traffic needs |
+| INC-2325 | checkout-service | 2026-08-30 | Infra change | SEV2 | Autoscaling threshold changed pre-peak |
+| INC-2340 | auth-service | 2026-09-10 | Feature flag rollout | SEV3 | Session token flag mismatch across regions |
+| INC-2341 | mobile-frontend | 2026-09-10 | Feature flag rollout | SEV2 | Session flag mismatched auth token change (synthetic) |
+
+Ten records come from the course sample. INC-1987 and INC-2055 come from the
+related-incident table in the INC-2201 postmortem, with synthetic root causes.
+The other eight marked (synthetic) were written so every service has at least two
+incidents. Provenance for every record is in `data/README.md`.
+
+### B. Service dependencies and current state
+
+| Service | Depends on | Depended on by | Status | Freeze window |
+|---|---|---|---|---|
+| checkout-service | payment-gateway, inventory-service, auth-service | order-service | Healthy | No |
+| payment-gateway | notification-service | checkout-service | Degraded | No |
+| auth-service | — | checkout-service, web-frontend, mobile-frontend | Healthy | Yes |
+| inventory-service | — | checkout-service, order-service | Healthy | No |
+| order-service | checkout-service, inventory-service | web-frontend, mobile-frontend | Healthy | No |
+| notification-service | — | payment-gateway | Healthy | No |
+| web-frontend | order-service, auth-service | — | Healthy | No |
+| mobile-frontend | order-service, auth-service | — | Healthy | Yes |
+
+### C. Glossary
+
+- **Freeze window:** a period when non-emergency changes to a service are not
+  supposed to ship, for example before a peak sales event.
+- **Blast radius:** the set of services that would be affected if a change to
+  one service failed, found by following the dependency graph downstream.
+- **SEV1 / SEV2 / SEV3:** incident severity, from SEV1 (major customer-facing
+  outage) to SEV3 (limited impact).
+- **Golden eval:** the fixed set of test queries and expected answers used to
+  score CRA automatically.
+
+### D. Open questions
+
+1. Which public postmortems, if any, should join the corpus under ADR-007?
+
+Decided while drafting: CRA suggests a mitigation only when a cited incident's
+root cause or action item supports it, and stored team settings change through
+chat with explicit confirmation, with every downgrade logged.
+
+### E. Related documents
+
+- PR/FAQ: `docs/pr-faq.md`
+- Requirements: [Sep-Projects/ChangeRiskAdvisor/requirements.md](https://github.com/abhineer/Sep-Projects/blob/main/ChangeRiskAdvisor/requirements.md)
+- Golden eval: `data/golden_eval.json`
+- Decision records: `docs/adr/`
+
+### F. Risk summary (before mitigation)
+
+| Risk | Likelihood | Impact | Main mitigation |
+|---|---|---|---|
+| Fabricated evidence | High | High | Guardrail checks IDs against the corpus and facts against tool results; golden eval |
+| Over-trust | Medium | High | Advisory line on every answer; rating with reasons, never a verdict; evidence on screen |
+| Silent tool failure | Medium | High | "Unconfirmed" labels; failures logged and counted on the dashboard |
+| Stored setting overridden | Medium | High | Chat confirmation; logged downgrades; never changed on CRA's own judgement |
+| Synthetic data may not generalise (open) | — | — | Pilot on real, redacted history before relying on results |
+
+---
+
+## Review sign-off
+
+Agreement is recorded as an approval on the pull request that adds this file,
+plus a row below for each reviewer.
+
+| Name | Role | Decision | Date | Approval link |
+|---|---|---|---|---|
+| Raj Sam | Author | _pending_ | | |
+| _reviewer_ | Team member or mentor | _pending_ | | |

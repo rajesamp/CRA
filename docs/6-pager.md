@@ -108,61 +108,70 @@ with the person who knows about Friday's peak event.
 
 ## Solution
 
-CRA meets Raj Sam at the point of decision. Here is what one review looks like.
-Raj Sam receives a change that lowers checkout-service's payment timeout to
-500 ms, and types into CRA: "How risky is this change to the checkout-service
-config?"
+Replay INC-2201 with CRA in place. It is February 2026. The change lowering
+checkout-service's payment timeout from 5,000 ms to 500 ms lands in Raj Sam's
+queue on a busy afternoon. Raj Sam pastes it into CRA and asks: "How risky is
+this change to the checkout-service config?"
 
-CRA answers in one response. It reports that this change closely matches
-INC-2201, where the same kind of timeout reduction on checkout-service caused a
-SEV1 outage under promotional traffic, and INC-2289, where a retry timeout set
-too low failed under load in July. It checks checkout-service's live status
-and reports that the service is healthy and no freeze window is active. It
-looks up the dependency graph and notes that checkout-service calls
-payment-gateway, which is currently degraded, and that order-service,
-web-frontend, and mobile-frontend all sit downstream and would feel an outage.
-It reminds Raj Sam that the team has flagged checkout-service as always
-high-risk. It closes by recommending a load test at three times baseline
-traffic before release, citing the INC-2201 postmortem, and by stating that the
-decision to ship requires a human. Every claim in the response points to its
-source, and a trace panel under the answer shows which checks CRA ran and which
-incidents it retrieved.
+CRA answers in one response. It rates the change **High** and gives its
+reasons, each with a source. First, history: payment-gateway, the service this
+timeout guards, failed twice in the last six months. INC-1987 was a config
+change that lowered a timeout below peak latency (SEV2), and INC-2055 was a
+dependency upgrade that exhausted connections at peak (SEV1). Second, system
+state: the system-health tool reports checkout-service's current status and
+whether a freeze window is active, and CRA repeats exactly what the tool
+returned. Third, blast radius: the dependency-graph tool shows that
+checkout-service calls payment-gateway, and that order-service, web-frontend,
+and mobile-frontend all sit downstream of checkout. A payment failure here is a
+customer-facing outage on web and mobile.
 
-Four capabilities make this possible.
+CRA then suggests one mitigation, and only because the evidence supports it:
+INC-1987's root cause was a timeout set below peak latency, so CRA suggests
+checking the new 500 ms value against payment-gateway's peak p99 latency before
+release. It ends with the same line every answer ends with: this is advisory,
+and the decision to ship is Raj Sam's.
+
+That leaves the decision where it belongs. Raj Sam knows something CRA doesn't:
+a promotional email is scheduled for that afternoon. With INC-1987 and INC-2055
+on screen and a peak event coming, Raj Sam holds the change. The outage in the
+Problem section doesn't happen. Run the same change today, with INC-2201 in the
+corpus, and CRA also cites INC-2201 and its postmortem action item: load test
+any payment-gateway timeout change at three times baseline traffic.
+
+Four capabilities make that answer possible.
 
 **Retrieval over past incidents.** CRA searches a corpus of change-related
-postmortems, runbooks, and incident summaries for the incidents most similar to
-the proposed change, by service and by type of change. It cites them by ID and
-root cause. If nothing similar exists, it says so rather than stretching an
+postmortems, runbooks, and incident summaries for the incidents closest to the
+proposed change, by service, dependency, and change type. It cites each one by
+ID and root cause. If nothing similar exists, it says so. It never stretches an
 unrelated incident to fit.
 
 **Live checks.** Two tools report the current state of the system. The
-system-health tool returns a service's status, any active incidents, and
-whether a freeze window is in force. The dependency-graph tool returns the
-services a given service depends on and the services that depend on it. CRA
-never infers health, freeze status, or dependencies from service names; it
-states only what a tool returned during that request, and if a tool fails it
-labels that part of the answer unconfirmed.
+system-health tool returns a service's status, active incidents, and freeze
+status. The dependency-graph tool returns what a service depends on and what
+depends on it. CRA never infers any of this from service names. It states only
+what a tool returned in that request, and if a tool fails, it marks that part of
+the answer unconfirmed.
 
-**Team memory.** Raj Sam can tell CRA once that "checkout-service is always
-high-risk for our team," and CRA applies that setting in every later session
-without being reminded. Stored settings stay in place until the team changes
-them. CRA never downgrades them on its own judgement, even when the evidence
-for a particular change looks mild.
+**Team memory.** The team can tell CRA that "checkout-service is always
+high-risk," and CRA applies it in every later session without being reminded.
+Anyone can set or clear a flag in chat, but CRA repeats the change back and
+saves it only after explicit confirmation. Every downgrade is logged. CRA never
+changes a stored setting on its own judgement.
 
 **Guardrails.** A check runs on every response before Raj Sam sees it. It
-confirms that the response contains no approval, block, merge, or deploy
-decision, that every risk claim carries a citation, and that every statement
-about health, freeze windows, or dependencies matches a tool result. A
-response that fails is corrected or marked unconfirmed, and the event is
-logged. If Raj Sam asks CRA to "just approve this change," it declines,
-explains that approval is a human step, and offers to finish the risk
-assessment instead.
+blocks any approve, block, merge, or deploy decision. It rejects a risk rating
+that arrives without cited reasons, and a mitigation that no cited incident
+supports. It confirms that every health, freeze, and dependency statement
+matches a tool result. A response that fails is corrected or marked
+unconfirmed, and the event is logged. Ask CRA to "just approve this change" and
+it declines, explains that approval is a human step, and offers to finish the
+risk assessment.
 
-CRA is built with Google's Agent Development Kit on `gemini-2.5-flash`, with a
-ChromaDB vector store for the incident corpus, an MCP server for the two live
-tools, a SQLite session store for team memory, and a Gradio chat interface. The
-reasoning behind each choice is recorded in [docs/adr/](adr/index.md).
+CRA runs on Google's Agent Development Kit with `gemini-2.5-flash`, a ChromaDB
+vector store for the incident corpus, an MCP server for the two live tools, a
+SQLite session store for team memory, and a Gradio chat interface. The reasons
+for each choice are in the decision records under [docs/adr/](adr/index.md).
 
 ## Goals & Non-Goals
 
@@ -313,11 +322,11 @@ every record is in `data/README.md`.
 
 ### D. Open questions
 
-1. Should CRA's recommendation include a suggested mitigation (such as "load
-   test at 3x baseline"), or only the risk read and evidence?
-2. How should the team change a stored high-risk setting: by telling CRA in
-   chat, or through a separate reviewed step?
-3. Which public postmortems, if any, should join the corpus under ADR-007?
+1. Which public postmortems, if any, should join the corpus under ADR-007?
+
+Decided while drafting: CRA suggests a mitigation only when a cited incident's
+root cause or action item supports it, and stored team settings change through
+chat with explicit confirmation, with every downgrade logged.
 
 ### E. Related documents
 

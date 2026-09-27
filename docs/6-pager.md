@@ -70,38 +70,44 @@ ones least likely to get it.
 ## Customer
 
 Our customer is Raj Sam, a DevOps engineer at a mid-size SaaS company. Raj Sam
-reviews about a dozen proposed production changes a day: configuration updates,
-dependency upgrades, feature-flag rollouts, infrastructure changes, and schema
-migrations. They span eight services, from checkout-service and payment-gateway
-to the web and mobile frontends. Raj Sam knows some of these services deeply
-and others only by name.
+reviews proposed production changes across eight services, from
+checkout-service and payment-gateway to the web and mobile frontends: config
+updates, dependency upgrades, feature-flag rollouts, infra changes, and schema
+migrations. Some days bring a handful of changes. Release days bring a spike,
+and that is when the risky ones get through. Raj Sam knows some of these
+services deeply and others only by name.
 
-For each change, Raj Sam has to answer one question: how likely is this to hurt
-us, and should it go out now? Today they answer it from memory and from
-whatever the change author wrote. When there is time, they check the incident
-tracker for past problems with the service, look at the health dashboard, check
-the freeze calendar, and trace who depends on the service. When there isn't
-time, they rely on the change description and their
-sense of which services are fragile. That sense is only as good as the
-incidents they personally remember. Raj Sam was not on call for every incident
-on every service, and nobody is.
+For every change, Raj Sam has to answer one question: will this hurt us, and
+should it ship now? Their first stop is the dashboards. Is the service healthy?
+Is anything already degraded or alerting? That check is quick, and it catches
+problems that exist today. It says nothing about what went wrong the last time
+someone made a change like this one.
 
-What Raj Sam wants is simple to state. They want to paste in a change
-description and get a fast, evidence-backed risk read that cites similar past
-incidents and the current state of the system. They want a reminder when a
-change touches a service the team has flagged as high-risk or lands inside a
-freeze window. They want the safe changes to go through faster because the
-evidence shows why they are safe, and the risky ones to get a second look
-because the evidence shows why they are risky.
+That second check, past incident history, is the one that gets skipped. Finding
+the right postmortems means searching the incident tracker, reading root causes,
+and matching them to the change in front of you. On a spike day there is no time
+for that, so Raj Sam falls back on memory. Memory only covers the incidents
+Raj Sam was around for. Nobody is on call for every incident on every service.
+INC-2201 is what that gap looks like: the history that would have flagged the
+change existed, and nobody reviewing it had it in front of them.
 
-What Raj Sam will not give up is the decision. They are firm that a tool should
-only advise: Raj Sam and their team make the go/no-go call. They are
-accountable for what ships, and they hold context no tool has, such as a
-customer commitment that makes this week the wrong week for a change. A tool
-that approved changes would take the decision away from the people who answer
-for it, and a tool that stated risk without evidence would be one more opinion
-to second-guess. Raj Sam needs something that makes their own judgement better
-informed.
+Raj Sam also carries context no tool has. The biggest is peak events: a sale, a
+launch, or a marketing push that is about to multiply traffic. INC-2201 turned
+from a quiet config change into a SEV1 because a promotional email tripled
+traffic eight minutes after deploy. Raj Sam knows when those pushes are coming.
+A tool doesn't.
+
+What Raj Sam wants is simple. Paste in a change and get a fast risk read that
+cites similar past incidents and the current state of the system. Get flagged
+when a change touches a service the team has marked high-risk or lands in a
+freeze window. Let safe changes move faster because the evidence shows why
+they're safe, and give risky ones the second look they need.
+
+What Raj Sam will not give up is the decision. The tool advises; Raj Sam and
+the team make the go/no-go call. Their reason is rubber-stamping: the moment a
+bot can approve a change, people stop reading the change. An advisor keeps the
+reviewer reading. It puts the evidence in front of them and leaves the call
+with the person who knows about Friday's peak event.
 
 ## Solution
 
